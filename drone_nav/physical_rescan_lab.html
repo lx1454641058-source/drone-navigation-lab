@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>物理悬停与相机复查</title>
+<style>
+:root{font-family:system-ui,"Microsoft YaHei",sans-serif;color:#172c3b;background:#edf2f5}*{box-sizing:border-box}body{margin:0}main{max-width:1180px;margin:auto;padding:28px 22px}h1{font-size:28px;margin:8px 0 12px}h2{font-size:18px;margin:0 0 14px}p{line-height:1.75;margin:10px 0}small,.muted{color:#566e7e}header{border-bottom:1px solid #cbd9e1;padding-bottom:20px}.tag{color:#167268;font-size:13px;font-weight:700;letter-spacing:2px}.controls{display:flex;flex-wrap:wrap;gap:14px;margin:20px 0}label{display:flex;align-items:center;gap:8px;font-size:14px}select{padding:9px;border:1px solid #b7cad7;border-radius:6px;background:white;max-width:100%;font:inherit}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card,section{background:white;border:1px solid #d6e1e7;border-radius:10px;padding:18px}.card strong{display:block;font-size:22px;margin-top:8px}.notice{padding:14px 18px;background:#e5f2ed;border-left:4px solid #167268;border-radius:5px;margin:18px 0}.notice.bad{background:#fff0ed;border-color:#b03b2d}.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}section{margin-top:16px}svg{display:block;width:100%;height:auto}img{display:block;width:100%;max-height:250px;object-fit:contain;background:#edf2f5;image-rendering:pixelated;margin:12px 0}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;border-bottom:1px solid #e0e8ed;padding:9px 6px}th{color:#526b7a}.table{overflow:auto}code{overflow-wrap:anywhere}pre{white-space:pre-wrap;word-break:break-word;font-size:12px;max-height:340px;overflow:auto}summary{cursor:pointer;color:#245c75}@media(max-width:760px){.grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr}main{padding:18px 12px}h1{font-size:24px}}
+</style>
+<main>
+<header><div class="tag">DRONE NAV / 物理联调记录</div><h1>先悬停复查，再确认移动</h1><p>历史视角来自前段模拟飞行前的实际拍摄。扫描期间持续计算四桨推力，用采集时的位置、姿态和时间做检查。</p><small>本页是保存结果的回放。理想 RGB-D、精确仿真位姿和静态场景，尚非真实视觉配送系统。</small></header>
+<div class="controls"><label>实验场景 <select id="scene"></select></label></div>
+<div class="cards"><div class="card"><small>下一段结果</small><strong id="state"></strong></div><div class="card"><small>证据有效期假设</small><strong id="ttl"></strong></div><div class="card"><small>复查采集帧数</small><strong id="scans"></strong></div><div class="card"><small>实际执行的移动段数</small><strong id="moves"></strong></div></div>
+<div id="notice" class="notice"></div>
+<div class="grid"><section><h2>物理时间与实际前进位置</h2><svg id="plot" viewBox="0 0 610 280" aria-label="实际位置随物理时间变化"></svg><p class="muted">横轴：物理时间（秒）；纵轴：世界 x 位置（米）。浅绿区域是复查阶段，红带是细障碍的 x 范围。该图仅展示 x 分量；空间侵犯由三维距离另行评价。</p></section>
+<section><h2>实际采集的相机画面</h2><label>图像 <select id="frame"></select></label><img id="image" alt="保存的原始相机彩色图"><p id="frameInfo" class="muted"></p></section></div>
+<section><h2>观察与执行记录</h2><div class="table"><table><thead><tr><th>阶段</th><th>实际时间</th><th>状态</th><th>结果</th></tr></thead><tbody id="events"></tbody></table></div><p id="audit"></p></section>
+<section><h2>这次能够证明什么</h2><p>检查保留了物理控制器的 12 格机体及停止预留，以及 8 秒动作预算和 0.5 秒停止期限。旧图像不会因为新扫描而刷新年龄，控制器未到达时也不会把位置直接写成目标格。</p><p><b>12 秒是原默认值；20 秒只用于独立静态对照。</b>延长有效期不能替代新观测。错误的障碍尺寸声明仍可能导致漏采和空间侵犯；未知尺寸保持停止。</p><p>前段接近飞行由旧物理检查批准；没有声称整个任务都已满足新采样条件。云台转动是理想设置，扫描处理时间是配置值，不是实测硬件性能。</p><details><summary>查看本例检查与控制回执</summary><pre id="detail"></pre></details></section>
+</main>
+<script>
+const DATA=__DATA__;
+const $=id=>document.getElementById(id), fmt=(x,n=3)=>Number(x).toFixed(n);
+const names={ARRIVED_AND_SLOW:'到达并低速',SCAN_BUDGET_HOLD:'观察后仍停止',OBSERVED_OBSTACLE_HOLD:'发现障碍，停止',KNOWN_OBSTACLE_HOLD:'已知障碍，停止',SCAN_SENSOR_HOLD:'深度异常，停止',SCAN_PROTOCOL_HOLD:'输入错配，停止',SCAN_STABILITY_HOLD:'悬停异常，停止',CONTROLLER_TIMEOUT:'控制超时',INITIAL_POSE_HOLD:'起点未确认',PREMOVE_POSE_HOLD:'移动前状态未确认'};
+DATA.cases.forEach((c,i)=>$('scene').add(new Option(c.title,i)));
+function row(values){const tr=document.createElement('tr');values.forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});$('events').appendChild(tr)}
+function graph(s,q){const states=s.history,maxT=s.actual_final.time_s,W=530,H=208,X=t=>56+t/maxT*W,Y=x=>236-x/6*H;let shapes='<rect x="56" y="28" width="530" height="208" fill="#f5f8fa"/>';
+if(q){const x=X(q.actual_start.time_s),end=X(q.actual_after_scan.time_s);shapes+=`<rect x="${x}" y="28" width="${end-x}" height="208" fill="#d3eee3"/>`}
+if(s.spec.thin){shapes+=`<rect x="56" y="${Y(5.2+s.spec.thin/2)}" width="530" height="${Math.max(2,s.spec.thin/6*H)}" fill="#db695c"/>`}
+for(let y=0;y<=6;y+=2)shapes+=`<line x1="56" y1="${Y(y)}" x2="586" y2="${Y(y)}" stroke="#cedce4"/><text x="38" y="${Y(y)+4}" font-size="12" fill="#546d7b">${y}</text>`;
+for(let i=0;i<=4;i++){const t=maxT*i/4;shapes+=`<text x="${X(t)}" y="262" text-anchor="middle" font-size="12" fill="#546d7b">${fmt(t,1)}</text>`}
+shapes+=`<polyline fill="none" stroke="#12796d" stroke-width="2.5" points="${states.map(v=>`${X(v.time_s)},${Y(v.position[0])}`).join(' ')}"/>`;$('plot').innerHTML=shapes}
+function showFrame(){const c=DATA.cases[+$('scene').value],s=c.summary,i=+$('frame').value,meta=s.camera_metadata[i];$('image').src=c.images[i];let label=i<8?'前段八向扫描':i===8?'前段宽视角历史':'悬停复查';$('frameInfo').textContent=`${label}｜采集 ${fmt(meta.time_s)} 秒｜位置 (${meta.position.map(v=>fmt(v)).join(', ')}) 米。深度/位姿故障在消费接口注入，此处显示保存的原始彩色图。`}
+function render(){const c=DATA.cases[+$('scene').value],s=c.summary,q=s.result;$('state').textContent=q?(names[q.state]||q.state):'接近飞行停止';$('ttl').textContent=s.budget.free_ttl_s+' 秒';$('scans').textContent=Math.max(0,s.frame_count-9);$('moves').textContent=s.actions.length;
+const bad=s.audit.clearance_violations>0;$('notice').className='notice'+(bad?' bad':'');$('notice').textContent=bad?'保留失败：轨迹进入机体预留范围，控制器未确认到达。旋转复查仍不能排除所有细障碍。':q&&q.receipt&&q.receipt.completed?'本例在明确的静态有效期和尺寸假设下，经复查后由物理控制器完成下一段移动。':'本例没有确认下一段到达；查看观察记录，区分证据不足、传感器异常和控制执行失败。';
+$('events').textContent='';row(['接近飞行',s.approach?`${fmt(s.approach.start.time_s)} → ${fmt(s.approach.end.time_s)} 秒`:'—',s.approach?s.approach.reason:s.warmup_guard.reason,s.approach&&s.approach.completed?'到达复查位置':'未确认']);
+if(q){q.events.forEach((e,i)=>row([`复查 ${i+1} / 相位 ${e.phase.join(',')}`,`${fmt(e.capture_state.time_s)} 秒`,names[e.state]||e.state,e.error||'按原采集时间判断']));row(['下一段移动',q.receipt?`${fmt(q.receipt.start.time_s)} → ${fmt(q.receipt.end.time_s)} 秒`:'未发出新移动',names[q.state]||q.state,`确认格 (${q.confirmed_cell.join(',')})`]);row(['最终状态',fmt(q.actual_final.time_s)+' 秒',q.stop_confirmed?'低速已确认':'低速未确认',`速度 ${fmt(Math.hypot(...q.actual_final.velocity),4)} 米/秒`])}
+$('audit').textContent=`共 ${s.steps.toLocaleString()} 个物理步；三维机体预留侵犯 ${s.audit.clearance_violations.toLocaleString()} 个采样区间，边界侵犯 ${s.audit.boundary_violations}。区间数不是独立碰撞次数。`;
+$('detail').textContent=JSON.stringify({budget:s.budget,result:q},null,2);$('frame').textContent='';c.images.forEach((_,i)=>$('frame').add(new Option(i<8?`前段扫描 ${i+1}`:i===8?'历史宽视角':`复查 ${i-8}`,i)));$('frame').value=String(c.images.length-1);graph(s,q);showFrame()}
+$('scene').addEventListener('change',render);$('frame').addEventListener('change',showFrame);render();
+</script>
+</html>

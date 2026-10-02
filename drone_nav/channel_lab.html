@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- 来源：本项目原创。真实照片保留 VisDrone 署名及 CC BY-NC-SA 3.0。 -->
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>导航观测通道 · 时效与路线</title><style>
+body{margin:0;background:#f2f5fa;color:#24354b;font:16px/1.7 system-ui,sans-serif}main{max-width:1200px;margin:auto;padding:28px 22px}h1{font-size:30px;margin:0}section{background:white;border:1px solid #dce5ef;padding:20px;border-radius:14px;margin:20px 0}.muted{color:#63748b}.note{background:#fff3dd;border-left:4px solid #c48a27;padding:12px 16px}.controls,.views{display:flex;gap:20px;flex-wrap:wrap}label{display:flex;flex-direction:column}select{font:inherit;padding:6px;border:1px solid #b9c8d9;border-radius:6px;max-width:100%}.views>div{flex:1;min-width:300px}svg{width:100%;display:block;background:#e3e9f1}img{width:100%;max-height:400px;object-fit:contain;background:#e3e9f1}table{width:100%;border-collapse:collapse;min-width:600px}th,td{text-align:left;border-bottom:1px solid #dce4ed;padding:8px}.scroll{overflow:auto}a{color:#275caf}footer{font-size:13px;color:#63748b}
+</style></head><body><main><p class="muted">DRONE NAVIGATION LAB · 影子路线验证</p><h1>旧观测过期后，路线能直接放行吗？</h1><p class="note">本页只记录候选路线，不执行飞行。过期表面证据变成未知限制；空检测、重复帧或坏帧不清空旧证据。</p>
+<section><div class="controls"><label>场景<select id="episode"></select></label><label>事件<select id="step"></select></label></div><h2 id="title"></h2><p class="note" id="status"></p><p id="receipt"></p><p id="counts"></p><div class="views"><div><h3>固定高度网格（1 米格）</h3><svg id="grid" role="img" aria-label="基础几何地图、表面限制与候选路线"></svg><p>灰：基础未知/阻塞；白：受控空闲夹具；橙：有效表面限制；紫：到期后的未知限制。蓝虚线：基础路线；绿实线：附加限制后的路线；S/G：起终点。</p></div><div><h3>输入图像</h3><img id="photo" alt="本例对应的原始观测图像"><p class="muted">几何走廊是用于隔离路径逻辑的测试夹具，未从这张图重建。真实图片场景的基础地图全未知。</p></div></div><p><a id="input" href="#">本例完整事件输入</a> · <a href="report.json">全部路线与证据</a> · <a href="protocol.md">协议</a> · <a href="manifest.json">文件摘要</a></p></section>
+<section><h2>当前高度的证据</h2><p>显示采集与失效时刻。表面点不代表物体完整体积，背景混入仍可能造成误停。</p><div class="scroll"><table><thead><tr><th>体素 x,y,z</th><th>状态</th><th>采集秒</th><th>失效秒</th><th>来源帧</th></tr></thead><tbody id="cells"></tbody></table></div></section>
+<section><h2>适用边界</h2><p>复用已有 A* 的四邻接路线逻辑，固定高度、零额外栅格缓冲，只比较证据消费行为；没有验证机体体积、定位误差、动态预测或制动空间。附加观测只增加限制，不创建空闲格。</p><p>本阶段尚无独立新几何观测清除协议，因此过期限制继续阻止穿越。这里的保守停住是可用性代价，不等于完成导航。真实航拍没有可信时间、深度和位姿，检测仍只作为二维证据。</p></section>
+<footer>原创代码与合成图。真实图片：VisDrone / AISKYEYE 团队，天津大学，<a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0</a>。真实检测来自已归档 LibreTinyFormer-S 输出；TinyFormer / AICVlab, NYCU、DEIMv2 / Intellindust、DINOv3 / Meta。<a href="model-source/LICENSE">模型组合许可</a> · <a href="model-source/NOTICE">署名</a>。</footer></main>
+<script type="application/json" id="data">__DATA__</script><script>
+'use strict';
+const R=JSON.parse(document.getElementById('data').textContent),$=id=>document.getElementById(id),ns='http://www.w3.org/2000/svg';
+const names={SURFACES_RECORDED:'记录表面证据',NO_SURFACES_NO_CLEARING:'没有新表面；不清除旧证据',REPEATED_FRAME:'拒绝重复帧',OUT_OF_ORDER_CAPTURE:'拒绝乱序或相同采集时刻',CONTEXT_REJECTED:'拒绝缺失、错配或过期的空间上下文'};
+for(const e of R.episodes){const op=document.createElement('option');op.value=e.key;op.textContent=e.title+' · '+e.key;$('episode').append(op);}
+function current(){return R.episodes.find(e=>e.key===$('episode').value);}
+function setup(){const e=current();$('step').replaceChildren();e.events.forEach((v,i)=>{const op=document.createElement('option');op.value=i;op.textContent=(i+1)+' · '+v.title;$('step').append(op);});render();}
+function shape(kind,attrs,text){const n=document.createElementNS(ns,kind);for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);if(text)n.textContent=text;$('grid').append(n);}
+function render(){const e=current(),event=e.events[Number($('step').value)],d=event.decision,s=d.observation;
+$('title').textContent=event.title;$('status').textContent=(d.route.length?'存在待检查的候选路线':'停止规划：没有证据支持的路线')+'；飞行授权：否';
+$('receipt').textContent=event.receipt?(names[event.receipt.reason]||event.receipt.reason)+'；更新体素 '+event.receipt.updated_cells+' 个':'没有新帧，仅推进消费时间';
+const active=s.cells.filter(c=>c.state==='surface_restriction').length,expired=s.cells.length-active;
+$('counts').textContent=`消费时间 ${s.now_s.toFixed(2)} s；全高度有效限制 ${active} 格，过期未知 ${expired} 格；基础路线 ${Math.max(0,d.baseline_route.length-1)} 步，附加限制后 ${d.route.length?d.route.length-1:'无路线'}。`;
+$('photo').src=e.image;$('input').href=e.input;$('grid').replaceChildren();$('grid').setAttribute('viewBox','-1 -1 22 18');
+const blocked=new Set(d.base_blocked.map(c=>c.join(','))),cells=s.cells.filter(c=>c.voxel[2]===1),lookup=new Map(cells.map(c=>[c.voxel.slice(0,2).join(','),c]));
+for(let y=0;y<R.height;y++)for(let x=0;x<R.width;x++){const v=lookup.get(x+','+y);shape('rect',{x,y,width:1,height:1,fill:v?(v.state==='surface_restriction'?'#ecaa4a':'#ad91c9'):blocked.has(x+','+y)?'#d2dae6':'#fff',stroke:'#a6b5c6','stroke-width':.025});}
+for(const [path,color,dashed]of [[d.baseline_route,'#3978d4',true],[d.route,'#17836b',false]])if(path.length)shape('polyline',{points:path.map(c=>(c[0]+.5)+','+(c[1]+.5)).join(' '),fill:'none',stroke:color,'stroke-width':.16,'stroke-dasharray':dashed?'.3 .15':'none'});
+for(const [x,y,t]of [[11,7,'S'],[17,7,'G']])shape('text',{x:x+.5,y:y+.7,'font-size':.6,'font-weight':'bold','text-anchor':'middle',fill:'#102641'},t);
+for(let x=0;x<20;x+=2)shape('text',{x:x+.5,y:-.2,'font-size':.4,'text-anchor':'middle'},String(x));
+for(let y=0;y<16;y+=2)shape('text',{x:-.3,y:y+.6,'font-size':.4,'text-anchor':'middle'},String(y));
+$('cells').replaceChildren();for(const c of cells){const tr=document.createElement('tr');for(const v of [c.voxel.join(', '),c.state==='surface_restriction'?'有效表面限制':'过期，保持未知限制',c.captured_at_s.toFixed(2),c.valid_until_s.toFixed(2),c.frame_id]){const td=document.createElement('td');td.textContent=v;tr.append(td);}$('cells').append(tr);}}
+$('episode').addEventListener('change',setup);$('step').addEventListener('change',render);setup();
+</script></body></html>

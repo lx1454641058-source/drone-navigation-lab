@@ -1,0 +1,291 @@
+{
+  "schema": 1,
+  "model_repository": "Xenova/segformer-b0-finetuned-ade-512-512",
+  "model_revision": "d3e5499fa8701ff0453ca940a8dfeae39b2f1504",
+  "data_repository": "dronefreak/UAVid-2020",
+  "data_revision": "f6b176dfc880d905c62957dcba820820e725520e",
+  "cases": [
+    {
+      "key": "seq1_000000",
+      "split": "development",
+      "sequence": 1,
+      "image": "data/images/train/seq1_000000.png",
+      "label": "data/masks/train/seq1_000000.png"
+    },
+    {
+      "key": "seq2_000000",
+      "split": "development",
+      "sequence": 2,
+      "image": "data/images/train/seq2_000000.png",
+      "label": "data/masks/train/seq2_000000.png"
+    },
+    {
+      "key": "seq16_000000",
+      "split": "validation",
+      "sequence": 16,
+      "image": "data/images/val/seq16_000000.png",
+      "label": "data/masks/val/seq16_000000.png"
+    },
+    {
+      "key": "seq17_000000",
+      "split": "validation",
+      "sequence": 17,
+      "image": "data/images/val/seq17_000000.png",
+      "label": "data/masks/val/seq17_000000.png"
+    },
+    {
+      "key": "seq18_000000",
+      "split": "validation",
+      "sequence": 18,
+      "image": "data/images/val/seq18_000000.png",
+      "label": "data/masks/val/seq18_000000.png"
+    },
+    {
+      "key": "seq19_000000",
+      "split": "validation",
+      "sequence": 19,
+      "image": "data/images/val/seq19_000000.png",
+      "label": "data/masks/val/seq19_000000.png"
+    },
+    {
+      "key": "seq20_000000",
+      "split": "validation",
+      "sequence": 20,
+      "image": "data/images/val/seq20_000000.png",
+      "label": "data/masks/val/seq20_000000.png"
+    },
+    {
+      "key": "seq36_000000",
+      "split": "validation",
+      "sequence": 36,
+      "image": "data/images/val/seq36_000000.png",
+      "label": "data/masks/val/seq36_000000.png"
+    },
+    {
+      "key": "seq37_000000",
+      "split": "validation",
+      "sequence": 37,
+      "image": "data/images/val/seq37_000000.png",
+      "label": "data/masks/val/seq37_000000.png"
+    }
+  ],
+  "assets": [
+    {
+      "path": "packages/onnxruntime-node-1.22.0.tgz",
+      "url": "https://registry.npmjs.org/onnxruntime-node/-/onnxruntime-node-1.22.0.tgz",
+      "sha256": "8007ce525b5b185b77d2b4103d3ec147ecef6d861eb14726d0bdda5e2947dbd7",
+      "bytes": 93267589,
+      "kind": "npm"
+    },
+    {
+      "path": "packages/onnxruntime-common-1.22.0.tgz",
+      "url": "https://registry.npmjs.org/onnxruntime-common/-/onnxruntime-common-1.22.0.tgz",
+      "sha256": "8a779197b02f22411b8e2355e5cf4b477be8a116edebaf5b74eb227c779278de",
+      "bytes": 65121,
+      "kind": "npm"
+    },
+    {
+      "path": "packages/pngjs-7.0.0.tgz",
+      "url": "https://registry.npmjs.org/pngjs/-/pngjs-7.0.0.tgz",
+      "sha256": "c4b71873d48a692dd5eeb1dcb62185c7aafe40f2180c7cc7f30ec71e89a080be",
+      "bytes": 160939,
+      "kind": "npm"
+    },
+    {
+      "path": "licenses/LICENSE",
+      "url": "https://raw.githubusercontent.com/microsoft/onnxruntime/v1.22.0/LICENSE",
+      "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+      "bytes": 1073,
+      "kind": "file"
+    },
+    {
+      "path": "licenses/ThirdPartyNotices.txt",
+      "url": "https://raw.githubusercontent.com/microsoft/onnxruntime/v1.22.0/ThirdPartyNotices.txt",
+      "sha256": "e9e90971a8e75a9a8ac0c6412e29c1202d079998389915aa485f46c816c3b4cc",
+      "bytes": 326866,
+      "kind": "file"
+    },
+    {
+      "path": "licenses/SegFormer-LICENSE",
+      "url": "https://raw.githubusercontent.com/NVlabs/SegFormer/65fa8cfa9b52b6ee7e8897a98705abf8570f9e32/LICENSE",
+      "sha256": "f549820c06519e3105e5174a2fd7285224ffd2268a7f879a843b1a255fd04a61",
+      "bytes": 4065,
+      "kind": "file"
+    },
+    {
+      "path": "model/config.json",
+      "url": "https://huggingface.co/Xenova/segformer-b0-finetuned-ade-512-512/resolve/d3e5499fa8701ff0453ca940a8dfeae39b2f1504/config.json",
+      "sha256": "435799652b2b64c3e422dea20fed4c59651dae9f0e291fd885e9e067fee0ce2a",
+      "bytes": 6957,
+      "kind": "file"
+    },
+    {
+      "path": "model/preprocessor_config.json",
+      "url": "https://huggingface.co/Xenova/segformer-b0-finetuned-ade-512-512/resolve/d3e5499fa8701ff0453ca940a8dfeae39b2f1504/preprocessor_config.json",
+      "sha256": "dbabd93c735c8a5c39ef207c6c4459bf2d261a5dcc55e1ba1c1b982e5947f518",
+      "bytes": 373,
+      "kind": "file"
+    },
+    {
+      "path": "model/README.md",
+      "url": "https://huggingface.co/Xenova/segformer-b0-finetuned-ade-512-512/resolve/d3e5499fa8701ff0453ca940a8dfeae39b2f1504/README.md",
+      "sha256": "a746a8d3e8725d395217d4e93bc25d3890c4fefc13c1301d7983833a11fb703d",
+      "bytes": 1659,
+      "kind": "file"
+    },
+    {
+      "path": "model/model.onnx",
+      "url": "https://huggingface.co/Xenova/segformer-b0-finetuned-ade-512-512/resolve/d3e5499fa8701ff0453ca940a8dfeae39b2f1504/onnx/model.onnx",
+      "sha256": "3e5c18a4be395f16646438d54c42377ddc202edfa33d5eced0c9506de75c44c2",
+      "bytes": 15335446,
+      "kind": "file"
+    },
+    {
+      "path": "data/README.md",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/README.md",
+      "sha256": "d3aba8cca0965fa7467721a27e645489bb2553f47c03d030f3e25a259f8d1b0c",
+      "bytes": 5840,
+      "kind": "file"
+    },
+    {
+      "path": "data/data.yaml",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/data.yaml",
+      "sha256": "c6f2a352d51071284782055974ecbbb70194bd3d28d7d24026c1041210aa5122",
+      "bytes": 2335,
+      "kind": "file"
+    },
+    {
+      "path": "licenses/UAVid-author-page.html",
+      "url": "https://uavid.nl/",
+      "sha256": "701ee77debf1c067590a2386a650d6784996ce254b058dd70f1e2962203612a6",
+      "bytes": 14287,
+      "kind": "file"
+    },
+    {
+      "path": "data/images/train/seq1_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/images/train/seq1_000000.png",
+      "sha256": "1015ae4be675d26abf1a9e111036815631accbb6490a756959b86d71f0d798a6",
+      "bytes": 15692961,
+      "kind": "file"
+    },
+    {
+      "path": "data/masks/train/seq1_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/masks/train/seq1_000000.png",
+      "sha256": "bf120d683b955ac6323da9cc63c10d424c60cc984e9454746548331f9bac0556",
+      "bytes": 94671,
+      "kind": "file"
+    },
+    {
+      "path": "data/images/train/seq2_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/images/train/seq2_000000.png",
+      "sha256": "23865e1ad3cecc7e53e463b72e86a3d92bd92cd8ec0c41bd271ccd6b6beae406",
+      "bytes": 16139660,
+      "kind": "file"
+    },
+    {
+      "path": "data/masks/train/seq2_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/masks/train/seq2_000000.png",
+      "sha256": "ac4a872bad906a2106b4ab4d18d35b2027a350dc616185b5530855b42bdaec36",
+      "bytes": 52725,
+      "kind": "file"
+    },
+    {
+      "path": "data/images/val/seq16_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/images/val/seq16_000000.png",
+      "sha256": "51b568cececb991149b39c544b416194b198b18834ac16a4ca62a3c3d8a0ccf9",
+      "bytes": 12715187,
+      "kind": "file"
+    },
+    {
+      "path": "data/masks/val/seq16_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/masks/val/seq16_000000.png",
+      "sha256": "c5ac67a3ff484c90e50814b5926dcba8a6c4185fbc006a92d0248825c4498292",
+      "bytes": 76217,
+      "kind": "file"
+    },
+    {
+      "path": "data/images/val/seq17_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/images/val/seq17_000000.png",
+      "sha256": "e63e8ba4a1e08565f099699863e4dee199440c231a70d1572159366d04d9b827",
+      "bytes": 13525300,
+      "kind": "file"
+    },
+    {
+      "path": "data/masks/val/seq17_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/masks/val/seq17_000000.png",
+      "sha256": "7b4b48d5a91b2431f1a434bdabe917e397420f1a2f55db0be4e25fb1db6cd001",
+      "bytes": 71462,
+      "kind": "file"
+    },
+    {
+      "path": "data/images/val/seq18_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/images/val/seq18_000000.png",
+      "sha256": "8f840894b53480810c311c206f33e61e008de9bb0e018bc48c8ae180bb9c6d14",
+      "bytes": 15194594,
+      "kind": "file"
+    },
+    {
+      "path": "data/masks/val/seq18_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/masks/val/seq18_000000.png",
+      "sha256": "e2e2cf967e47adee27f7baea490f9517df6a9f312f11c20fc5f38a7358513467",
+      "bytes": 101954,
+      "kind": "file"
+    },
+    {
+      "path": "data/images/val/seq19_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/images/val/seq19_000000.png",
+      "sha256": "589821c59cbd7d2c2982b5bfa73f874c344e834bde086a9f21b92be437777596",
+      "bytes": 17630980,
+      "kind": "file"
+    },
+    {
+      "path": "data/masks/val/seq19_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/masks/val/seq19_000000.png",
+      "sha256": "d6d74211750ff55f28048e8bf769bebb5e967b786efd0baf05e93ab20cc4b350",
+      "bytes": 71528,
+      "kind": "file"
+    },
+    {
+      "path": "data/images/val/seq20_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/images/val/seq20_000000.png",
+      "sha256": "8e30064e8a0f58c36103ab94f64997b322162ced67baddc04c93e05bf5ce2ac5",
+      "bytes": 17198755,
+      "kind": "file"
+    },
+    {
+      "path": "data/masks/val/seq20_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/masks/val/seq20_000000.png",
+      "sha256": "55ca7578d46551a22161058aaf92d6fb31e7e34b24f006e12be4ddf999871a40",
+      "bytes": 85109,
+      "kind": "file"
+    },
+    {
+      "path": "data/images/val/seq36_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/images/val/seq36_000000.png",
+      "sha256": "eaa93bb1bb55b278ffbf82ec139d14f008c5606dfa28424faeb8caa17b225100",
+      "bytes": 18344465,
+      "kind": "file"
+    },
+    {
+      "path": "data/masks/val/seq36_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/masks/val/seq36_000000.png",
+      "sha256": "47b6df1d193fb6d0e4c879f1dc96ce1cbb21479d4bf8d350bc2b7137eca5b3c1",
+      "bytes": 60878,
+      "kind": "file"
+    },
+    {
+      "path": "data/images/val/seq37_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/images/val/seq37_000000.png",
+      "sha256": "fb0563f25e5d6cd85be2ac262c585e6321319acbd8feb5ac2e194f337545b431",
+      "bytes": 12439827,
+      "kind": "file"
+    },
+    {
+      "path": "data/masks/val/seq37_000000.png",
+      "url": "https://huggingface.co/datasets/dronefreak/UAVid-2020/resolve/f6b176dfc880d905c62957dcba820820e725520e/masks/val/seq37_000000.png",
+      "sha256": "1b57ff1ccae88c233e5c01637b038aa7e528256257e38ca0dc45414829debf2a",
+      "bytes": 103458,
+      "kind": "file"
+    }
+  ]
+}

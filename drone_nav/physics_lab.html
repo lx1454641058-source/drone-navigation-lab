@@ -1,0 +1,47 @@
+<!doctype html>
+<!-- 来源：本项目原创 Canvas 投影视图；显示 MuJoCo 计算结果，无外部图形资源。 -->
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>四旋翼物理实验台</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101824;color:#e7eef7;font:15px/1.65 system-ui,"Microsoft YaHei",sans-serif}main{max-width:1240px;margin:auto;padding:28px}h1{margin:5px 0;font-size:29px}h2{font-size:18px;margin:0 0 12px}.eyebrow{font-size:12px;letter-spacing:2px;color:#87dfbd}.muted{color:#a9bbce}p{margin:8px 0}.notice{border-left:3px solid #eabd7b;padding-left:13px}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:20px 0}select,button{padding:9px;background:#25364c;color:inherit;border:1px solid #53687e;border-radius:7px;font:inherit}select{max-width:100%}.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,1fr);gap:16px}.panel{padding:20px;border:1px solid #35475b;border-radius:14px;background:#192536}.panel.wide{margin-top:16px}canvas{display:block;width:100%;border-radius:9px;background:#111d2b}#scene{touch-action:none;cursor:grab}input[type=range]{width:100%}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{border-top:1px solid #35475b;padding:10px 0}.metric strong{font-size:22px;display:block}.metric span{font-size:12px;color:#a9bbce}.badge{border:1px solid #596d82;border-radius:18px;padding:4px 12px;color:#8fe6bd}.rotor{display:grid;grid-template-columns:50px 1fr 65px;gap:8px;align-items:center;margin:11px 0}progress{width:100%;accent-color:#81d5be}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;text-align:left;white-space:nowrap}td,th{padding:9px;border-bottom:1px solid #35475b}th{font-weight:500;color:#a9bbce}@media(max-width:800px){main{padding:15px}.grid{grid-template-columns:1fr}h1{font-size:25px}}
+</style>
+<main><div class="eyebrow">GRADUATION PROJECT / PHYSICS BENCH / V0.9</div><h1>让推力决定运动</h1>
+<p class="muted">MuJoCo 3.3.7 · 四个桨的推力 → 机体倾斜 → 空间运动 → 地面接触</p>
+<p class="notice">独立物理实验台：反馈来自仿真真实位置，尚未接入视觉导航。三维画面是原始物理轨迹的投影回放。</p>
+<div class="toolbar"><label for="case">实验</label><select id="case"></select><span class="badge" id="status"></span></div>
+<div class="grid"><section class="panel"><h2>三维运动回放</h2><canvas id="scene" width="760" height="520" aria-label="四旋翼位置与姿态三维投影"></canvas>
+<div class="toolbar"><button id="play">播放</button><button id="reset">回到起点</button><span id="time"></span></div><label for="timeline">时间进度</label><input id="timeline" type="range" min="0" value="0"><p class="muted">拖动画面旋转视角。绿色为轨迹，黄色为当前桨位，浅蓝框为目标。每个物理步长为 0.002 秒，画面通常每 0.02 秒记录一次。</p></section>
+<section class="panel"><h2>当前状态</h2><div class="metrics" id="metrics"></div><h2>四桨推力 / N</h2><div id="rotors"></div><p id="event" class="notice"></p><p class="muted">N 是力的单位牛顿。机体质量假设为 1.4 kg，单桨推力限制为 0–8 N；这些参数未经实机标定。</p></section></div>
+<section class="panel wide"><h2>高度随时间变化</h2><canvas id="chart" width="1100" height="220" aria-label="高度时间曲线"></canvas><p class="muted">曲线来自物理引擎输出。下降与推力失效都可能接触地面，必须结合速度和任务原因区分。</p></section>
+<section class="panel wide"><h2>七项开发试验</h2><div class="table-wrap"><table><thead><tr><th>试验</th><th>数值检查</th><th>最终速度</th><th>最大倾角</th><th>最小机体/地面间距</th></tr></thead><tbody id="results"></tbody></table></div></section>
+<section class="panel wide"><h2>验证范围</h2><p id="scope"></p><p class="muted">没有空气阻力、风、桨转速滞后、电池或传感器噪声；控制器不等于 PX4。机体采用刚性盒体，桨位用于施力，没有桨叶碰撞模型。软接触允许少量穿入地面；失去推力试验中较大的瞬时穿入已保留，不能据此宣称真实落地安全。</p></section></main>
+<script id="data" type="application/json">__PHYSICS_DATA__</script>
+<script>
+'use strict';const report=JSON.parse(document.getElementById('data').textContent),$=id=>document.getElementById(id);
+const add=(p,tag,text,cls='')=>{const e=document.createElement(tag);e.textContent=text;e.className=cls;p.append(e);return e;};
+report.results.forEach((r,i)=>{const o=add($('case'),'option',r.config.title);o.value=i;const tr=add($('results'),'tr','');for(const v of [r.config.title,r.check_passed?'通过':'未通过',r.metrics.final_speed_m_s.toFixed(4)+' m/s',r.metrics.max_tilt_deg.toFixed(2)+'°',r.metrics.min_ground_distance_m.toFixed(4)+' m'])add(tr,'td',v);});
+$('scope').textContent=report.scope;
+for(const name of ['左前','右前','左后','右后']){const e=add($('rotors'),'div','','rotor');add(e,'span',name);const bar=add(e,'progress','');bar.max=8;bar.value=0;add(e,'span','');}
+let selected=3,index=0,timer=null,yaw=.85,elevation=.6,drag=null;
+const result=()=>report.results[selected],rotorSigns=[[1,1],[1,-1],[-1,1],[-1,-1]];
+function rotate(v,q){const [w,x,y,z]=q,[a,b,c]=v;return [(1-2*(y*y+z*z))*a+2*(x*y-w*z)*b+2*(x*z+w*y)*c,2*(x*y+w*z)*a+(1-2*(x*x+z*z))*b+2*(y*z-w*x)*c,2*(x*z-w*y)*a+2*(y*z+w*x)*b+(1-2*(x*x+y*y))*c];}
+function draw(){const r=result(),s=r.trace[index],c=$('scene').getContext('2d'),p=s.position;c.clearRect(0,0,760,520);
+const project=([x,y,z])=>{x-=.8;y-=.2;return [380+90*(Math.cos(yaw)*x-Math.sin(yaw)*y),370+90*(Math.sin(elevation)*(Math.sin(yaw)*x+Math.cos(yaw)*y)-Math.cos(elevation)*z)];};
+const line=(a,b,color,width=1)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();c.moveTo(...project(a));c.lineTo(...project(b));c.stroke();};
+for(let i=-3;i<=4;i++){line([i,-3,0],[i,4,0],'#304258');line([-3,i,0],[4,i,0],'#304258');}
+for(const [axis,color,label] of [[[1,0,0],'#e6ad78','X'],[[0,1,0],'#8fc99d','Y'],[[0,0,1],'#8eb9f5','Z']]){line([0,0,0],axis,color,2);c.fillStyle=color;c.fillText(label,...project(axis));}
+c.strokeStyle='#8edbbd';c.lineWidth=2;c.beginPath();r.trace.slice(0,index+1).forEach((v,i)=>i?c.lineTo(...project(v.position)):c.moveTo(...project(v.position)));c.stroke();
+const target=r.config.target;if(!['off','loss'].includes(r.config.mode)){const t=project(target);c.strokeStyle='#8eb9f5';c.strokeRect(t[0]-7,t[1]-7,14,14);}
+line([p[0],p[1],0],p,'#6c7f91');const world=v=>rotate(v,s.quaternion).map((n,i)=>n+p[i]);
+for(const [i,[sx,sy]] of rotorSigns.entries()){const end=world([sx*.18,sy*.18,0]);line(p,end,'#d9e5ee',4);c.beginPath();for(let k=0;k<=24;k++){const a=k/24*2*Math.PI,v=project(world([sx*.18+.075*Math.cos(a),sy*.18+.075*Math.sin(a),0]));k?c.lineTo(...v):c.moveTo(...v);}c.strokeStyle=s.rotor_thrusts_n[i]>0?'#f0c27d':'#6e7f8d';c.lineWidth=2;c.stroke();}
+const corners=[[-.16,-.12,0],[.16,-.12,0],[.16,.12,0],[-.16,.12,0]];c.beginPath();corners.forEach((v,i)=>i?c.lineTo(...project(world(v))):c.moveTo(...project(world(v))));c.closePath();c.fillStyle='#65bbaa';c.fill();line(p,world([.25,0,0]),'#f19c8f',3);
+$('time').textContent=`${s.time_s.toFixed(2)} / ${r.config.duration_s.toFixed(2)} s`;$('metrics').replaceChildren();const speed=Math.hypot(...s.velocity),tilt=Math.acos(Math.max(-1,Math.min(1,1-2*(s.quaternion[1]**2+s.quaternion[2]**2))))*180/Math.PI;
+for(const [label,value] of [['高度',p[2].toFixed(3)+' m'],['速度',speed.toFixed(3)+' m/s'],['机体倾角',tilt.toFixed(2)+'°'],['距地面',s.ground_distance_m.toFixed(4)+' m']]){const e=add($('metrics'),'div','','metric');add(e,'strong',value);add(e,'span',label);}
+[...$('rotors').children].forEach((e,i)=>{e.querySelector('progress').value=s.rotor_thrusts_n[i];e.lastElementChild.textContent=s.rotor_thrusts_n[i].toFixed(2);});
+$('event').textContent=r.config.mode==='loss'?(s.time_s>=2?'全部推力已失效：这是坠落试验，不是正常降落。':'将在第 2 秒切断全部推力。'):r.config.mode==='descent'?(r.metrics.stopped_at_s!==null&&s.time_s>=r.metrics.stopped_at_s?'台架真实状态达到接地停桨条件。':'正在按脚本缓慢降低高度目标；没有视觉门控。'):'本试验用于核验理想物理模型与控制响应。';
+const chart=$('chart').getContext('2d'),hmax=Math.max(2.2,...r.trace.map(v=>v.position[2]))+.2;chart.clearRect(0,0,1100,220);chart.font='14px system-ui';for(let j=0;j<=4;j++){const h=j*hmax/4,y=190-h/hmax*160;chart.strokeStyle='#31445a';chart.beginPath();chart.moveTo(55,y);chart.lineTo(1080,y);chart.stroke();chart.fillStyle='#acbccd';chart.fillText(h.toFixed(1)+' m',5,y+4);}chart.strokeStyle='#87dfbd';chart.lineWidth=2;chart.beginPath();r.trace.forEach((v,i)=>{const a=[55+v.time_s/r.config.duration_s*1025,190-v.position[2]/hmax*160];i?chart.lineTo(...a):chart.moveTo(...a);});chart.stroke();const cx=55+s.time_s/r.config.duration_s*1025;chart.strokeStyle='#eabd7b';chart.beginPath();chart.moveTo(cx,15);chart.lineTo(cx,195);chart.stroke();chart.fillStyle='#acbccd';chart.fillText('0 s',55,214);chart.fillText(r.config.duration_s+' s',1030,214);}
+function stop(){if(timer)clearInterval(timer);timer=null;$('play').textContent='播放';}
+function select(){stop();selected=+$('case').value;index=0;$('timeline').max=result().trace.length-1;$('timeline').value=0;$('status').textContent=result().check_passed?'数值检查通过':'数值检查未通过';draw();}
+$('case').value=selected;$('case').addEventListener('change',select);$('timeline').addEventListener('input',()=>{stop();index=+$('timeline').value;draw();});$('reset').addEventListener('click',select);$('play').addEventListener('click',()=>{if(timer){stop();return;}if(index>=result().trace.length-1)index=0;$('play').textContent='暂停';timer=setInterval(()=>{index=Math.min(index+2,result().trace.length-1);$('timeline').value=index;draw();if(index===result().trace.length-1)stop();},40);});
+$('scene').addEventListener('pointerdown',e=>{drag=[e.clientX,e.clientY];$('scene').setPointerCapture(e.pointerId);});$('scene').addEventListener('pointermove',e=>{if(!drag)return;yaw+=(e.clientX-drag[0])*.008;elevation=Math.max(.15,Math.min(1.2,elevation+(e.clientY-drag[1])*.005));drag=[e.clientX,e.clientY];draw();});$('scene').addEventListener('pointerup',()=>drag=null);$('scene').addEventListener('pointercancel',()=>drag=null);select();
+</script></html>

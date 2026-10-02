@@ -1,0 +1,194 @@
+[
+  {
+    "split": "train",
+    "seed": 100,
+    "rgb": "dataset/train-100.png",
+    "labels": "dataset/train-100-labels.png",
+    "sha256": "87a6d0dcdefd1ae247fb9fa3f7e1f3add1e4354a6fa353b8c4645ba488931c30",
+    "label_sha256": "34c4d3c4e627b2c164fc544bf1135d5066760fd8c74f90679686de1e1bef0194"
+  },
+  {
+    "split": "train",
+    "seed": 101,
+    "rgb": "dataset/train-101.png",
+    "labels": "dataset/train-101-labels.png",
+    "sha256": "3bf7aa74fa27eb00e26538fa5ae49dae35128d1e9c6527d2225e178300b12ffb",
+    "label_sha256": "7d296f576e3df00cd803accde875ee182551d4aa358f66af87992c667f2aaed1"
+  },
+  {
+    "split": "train",
+    "seed": 102,
+    "rgb": "dataset/train-102.png",
+    "labels": "dataset/train-102-labels.png",
+    "sha256": "91a13ba5c101f3920554b8565122b4dae8013287df96edd3053fb833482bdeac",
+    "label_sha256": "e579ebc9b3ffc3a4b3a0d91f9b3260c82464f5b06b529083d30b4395f8e12075"
+  },
+  {
+    "split": "train",
+    "seed": 103,
+    "rgb": "dataset/train-103.png",
+    "labels": "dataset/train-103-labels.png",
+    "sha256": "cef7dc8c36881be8cdff40b8de55f853db1910b5f8a9c7cc05befd4d51f0ae12",
+    "label_sha256": "34c4d3c4e627b2c164fc544bf1135d5066760fd8c74f90679686de1e1bef0194"
+  },
+  {
+    "split": "train",
+    "seed": 104,
+    "rgb": "dataset/train-104.png",
+    "labels": "dataset/train-104-labels.png",
+    "sha256": "a44abffb15493f397ae21429eba641a5d32afa190468829a73166b0c1764c8eb",
+    "label_sha256": "7d296f576e3df00cd803accde875ee182551d4aa358f66af87992c667f2aaed1"
+  },
+  {
+    "split": "train",
+    "seed": 105,
+    "rgb": "dataset/train-105.png",
+    "labels": "dataset/train-105-labels.png",
+    "sha256": "020e877dadbaa2fee329b0ca11ededaf6c152d7d28035e925a921998e409b2c6",
+    "label_sha256": "3c354dc4f065d2f6d76b9f62dfda11b52de87e8767064beba6497d2e8ae844da"
+  },
+  {
+    "split": "train",
+    "seed": 106,
+    "rgb": "dataset/train-106.png",
+    "labels": "dataset/train-106-labels.png",
+    "sha256": "f79e7dba0cbd6742a1fbb209bb3941160af8fd2c144a9186b5ce34abfe26de66",
+    "label_sha256": "34c4d3c4e627b2c164fc544bf1135d5066760fd8c74f90679686de1e1bef0194"
+  },
+  {
+    "split": "train",
+    "seed": 107,
+    "rgb": "dataset/train-107.png",
+    "labels": "dataset/train-107-labels.png",
+    "sha256": "dec154b312d0c982c6dc9e39221258d9cad4f6da832ed9e80d0a2265634a732a",
+    "label_sha256": "e579ebc9b3ffc3a4b3a0d91f9b3260c82464f5b06b529083d30b4395f8e12075"
+  },
+  {
+    "split": "train",
+    "seed": 108,
+    "rgb": "dataset/train-108.png",
+    "labels": "dataset/train-108-labels.png",
+    "sha256": "b14d26f261ef2193e7dae614cc13ecb9bdf99cf8dae4053faccf00d40905a91b",
+    "label_sha256": "52709f5c22ab2a7f0820d30cfaee9a288fa0770c2f3dd0e335f794df54ea3e98"
+  },
+  {
+    "split": "train",
+    "seed": 109,
+    "rgb": "dataset/train-109.png",
+    "labels": "dataset/train-109-labels.png",
+    "sha256": "46aff9256e722b1f1d12b513f2ae1534e8ffb69d9981b989171e67e983c0a213",
+    "label_sha256": "34c4d3c4e627b2c164fc544bf1135d5066760fd8c74f90679686de1e1bef0194"
+  },
+  {
+    "split": "train",
+    "seed": 110,
+    "rgb": "dataset/train-110.png",
+    "labels": "dataset/train-110-labels.png",
+    "sha256": "08a9a9e22081acfaaadbdbd6765fd89ab3d252fe3f908688dedefd65d5005beb",
+    "label_sha256": "34c4d3c4e627b2c164fc544bf1135d5066760fd8c74f90679686de1e1bef0194"
+  },
+  {
+    "split": "train",
+    "seed": 111,
+    "rgb": "dataset/train-111.png",
+    "labels": "dataset/train-111-labels.png",
+    "sha256": "d4188390e08f13441ccb322fa42373b0c83f2ceb29c9bff925edc970fcc9a83e",
+    "label_sha256": "7d296f576e3df00cd803accde875ee182551d4aa358f66af87992c667f2aaed1"
+  },
+  {
+    "split": "test",
+    "seed": 200,
+    "rgb": "dataset/test-200.png",
+    "labels": "dataset/test-200-labels.png",
+    "sha256": "ef4c9a784be2ac213e32861e4f0d98f65b626e0f7d9adfc8d74e7fb40009b813",
+    "label_sha256": "7d296f576e3df00cd803accde875ee182551d4aa358f66af87992c667f2aaed1"
+  },
+  {
+    "split": "test",
+    "seed": 201,
+    "rgb": "dataset/test-201.png",
+    "labels": "dataset/test-201-labels.png",
+    "sha256": "f7fc9662e74b75e26242821bdf0b95842c508d72175049f1e1fbdbbacf1726cb",
+    "label_sha256": "3c354dc4f065d2f6d76b9f62dfda11b52de87e8767064beba6497d2e8ae844da"
+  },
+  {
+    "split": "test",
+    "seed": 202,
+    "rgb": "dataset/test-202.png",
+    "labels": "dataset/test-202-labels.png",
+    "sha256": "facf86bb1f971198a4d2cdb1790250dc0eda22017536e003d700105a0179c55f",
+    "label_sha256": "34c4d3c4e627b2c164fc544bf1135d5066760fd8c74f90679686de1e1bef0194"
+  },
+  {
+    "split": "test",
+    "seed": 203,
+    "rgb": "dataset/test-203.png",
+    "labels": "dataset/test-203-labels.png",
+    "sha256": "2f7fae792ace6d95e954b0576df9b3a7763ce977a9e3385845cd0b875ace0c42",
+    "label_sha256": "34c4d3c4e627b2c164fc544bf1135d5066760fd8c74f90679686de1e1bef0194"
+  },
+  {
+    "split": "test",
+    "seed": 204,
+    "rgb": "dataset/test-204.png",
+    "labels": "dataset/test-204-labels.png",
+    "sha256": "f45666aa003c56f967d2c0b48ddb818492f9c9512513c8462642ff96ec95aa1d",
+    "label_sha256": "52709f5c22ab2a7f0820d30cfaee9a288fa0770c2f3dd0e335f794df54ea3e98"
+  },
+  {
+    "split": "test",
+    "seed": 205,
+    "rgb": "dataset/test-205.png",
+    "labels": "dataset/test-205-labels.png",
+    "sha256": "b626dc1a8ce7eb7c91b5c104295b02862b9ef1b094bea3c50f6cda1634c2c2fb",
+    "label_sha256": "52709f5c22ab2a7f0820d30cfaee9a288fa0770c2f3dd0e335f794df54ea3e98"
+  },
+  {
+    "split": "dark_shift",
+    "seed": 300,
+    "rgb": "dataset/dark_shift-300.png",
+    "labels": "dataset/dark_shift-300-labels.png",
+    "sha256": "ee017e1ebbac4ce17fe237a1c5390e4ff6d8cc3b27494f9f5f81c3105cbd5556",
+    "label_sha256": "e579ebc9b3ffc3a4b3a0d91f9b3260c82464f5b06b529083d30b4395f8e12075"
+  },
+  {
+    "split": "dark_shift",
+    "seed": 301,
+    "rgb": "dataset/dark_shift-301.png",
+    "labels": "dataset/dark_shift-301-labels.png",
+    "sha256": "fae6cff5e0ebc6375944c54a571c629239ccfdb40e7d66d08ae676e41cd0cd1a",
+    "label_sha256": "34c4d3c4e627b2c164fc544bf1135d5066760fd8c74f90679686de1e1bef0194"
+  },
+  {
+    "split": "dark_shift",
+    "seed": 302,
+    "rgb": "dataset/dark_shift-302.png",
+    "labels": "dataset/dark_shift-302-labels.png",
+    "sha256": "6b85b62b7f2c985a2b0fd4a4654835a69421aad43fa4c6b17ae7d44ccd0341fe",
+    "label_sha256": "e579ebc9b3ffc3a4b3a0d91f9b3260c82464f5b06b529083d30b4395f8e12075"
+  },
+  {
+    "split": "dark_shift",
+    "seed": 303,
+    "rgb": "dataset/dark_shift-303.png",
+    "labels": "dataset/dark_shift-303-labels.png",
+    "sha256": "156ea7b54846e44422c556f6abb8dec08f73aae86c8625fdc324e8b3a85ae73f",
+    "label_sha256": "52709f5c22ab2a7f0820d30cfaee9a288fa0770c2f3dd0e335f794df54ea3e98"
+  },
+  {
+    "split": "dark_shift",
+    "seed": 304,
+    "rgb": "dataset/dark_shift-304.png",
+    "labels": "dataset/dark_shift-304-labels.png",
+    "sha256": "9e73ecba20f502649664e9fe20edd2c17913daa23d724b98cb9dfb8dd742b12c",
+    "label_sha256": "7d296f576e3df00cd803accde875ee182551d4aa358f66af87992c667f2aaed1"
+  },
+  {
+    "split": "dark_shift",
+    "seed": 305,
+    "rgb": "dataset/dark_shift-305.png",
+    "labels": "dataset/dark_shift-305-labels.png",
+    "sha256": "54cf639908d09ae72337854cd5a842a729965bf54382b00fba15d4d2ab77d2c2",
+    "label_sha256": "7d296f576e3df00cd803accde875ee182551d4aa358f66af87992c667f2aaed1"
+  }
+]

@@ -1,0 +1,302 @@
+{
+  "version": "0.2.0",
+  "model_sha256": "8c38923cfc2f90363c6c15a4f059eecf4d9c605402c324b393e8e313e01017c9",
+  "data_origin": "original_procedural_images",
+  "training_seeds": [
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111
+  ],
+  "nominal": {
+    "seeds": [
+      200,
+      201,
+      202,
+      203,
+      204,
+      205
+    ],
+    "image_count": 6,
+    "pixel_count": 9600,
+    "accuracy": 0.9997916666666666,
+    "unknown_fraction": 0.00020833333333333335,
+    "confusion_rows": [
+      "paved",
+      "vegetation",
+      "water",
+      "building",
+      "person"
+    ],
+    "confusion_columns": [
+      "paved",
+      "vegetation",
+      "water",
+      "building",
+      "person",
+      "unknown"
+    ],
+    "confusion": [
+      [
+        1920,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1920,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1920,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1918,
+        0,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1920,
+        0
+      ]
+    ],
+    "per_class": {
+      "paved": {
+        "recall": 1.0,
+        "iou": 1.0,
+        "pixels": 1920
+      },
+      "vegetation": {
+        "recall": 1.0,
+        "iou": 1.0,
+        "pixels": 1920
+      },
+      "water": {
+        "recall": 1.0,
+        "iou": 1.0,
+        "pixels": 1920
+      },
+      "building": {
+        "recall": 0.9989583333333333,
+        "iou": 0.9989583333333333,
+        "pixels": 1920
+      },
+      "person": {
+        "recall": 1.0,
+        "iou": 1.0,
+        "pixels": 1920
+      }
+    },
+    "inference_ms_per_image": 8.741,
+    "interpretation": "合成色块、相同生成器的开发阶段检查；不是自然图像泛化精度"
+  },
+  "dark_shift": {
+    "seeds": [
+      300,
+      301,
+      302,
+      303,
+      304,
+      305
+    ],
+    "image_count": 6,
+    "pixel_count": 9600,
+    "accuracy": 0.003958333333333334,
+    "unknown_fraction": 0.9960416666666667,
+    "confusion_rows": [
+      "paved",
+      "vegetation",
+      "water",
+      "building",
+      "person"
+    ],
+    "confusion_columns": [
+      "paved",
+      "vegetation",
+      "water",
+      "building",
+      "person",
+      "unknown"
+    ],
+    "confusion": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1920
+      ],
+      [
+        0,
+        14,
+        0,
+        0,
+        0,
+        1906
+      ],
+      [
+        0,
+        0,
+        6,
+        0,
+        0,
+        1914
+      ],
+      [
+        0,
+        0,
+        0,
+        18,
+        0,
+        1902
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1920
+      ]
+    ],
+    "per_class": {
+      "paved": {
+        "recall": 0.0,
+        "iou": 0.0,
+        "pixels": 1920
+      },
+      "vegetation": {
+        "recall": 0.007291666666666667,
+        "iou": 0.007291666666666667,
+        "pixels": 1920
+      },
+      "water": {
+        "recall": 0.003125,
+        "iou": 0.003125,
+        "pixels": 1920
+      },
+      "building": {
+        "recall": 0.009375,
+        "iou": 0.009375,
+        "pixels": 1920
+      },
+      "person": {
+        "recall": 0.0,
+        "iou": 0.0,
+        "pixels": 1920
+      }
+    },
+    "inference_ms_per_image": 8.228,
+    "interpretation": "合成色块、相同生成器的开发阶段检查；不是自然图像泛化精度"
+  },
+  "navigation_comparison": [
+    {
+      "scenario": "known_building",
+      "geometry_only": "READY_TO_LAND",
+      "vision_semantic": "READY_TO_LAND",
+      "geometry_unsafe_acceptance": false,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    },
+    {
+      "scenario": "new_obstacle",
+      "geometry_only": "READY_TO_LAND",
+      "vision_semantic": "READY_TO_LAND",
+      "geometry_unsafe_acceptance": false,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    },
+    {
+      "scenario": "blocked_route",
+      "geometry_only": "NO_PATH",
+      "vision_semantic": "NO_PATH",
+      "geometry_unsafe_acceptance": false,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    },
+    {
+      "scenario": "sensor_uncertain",
+      "geometry_only": "SENSOR_HOLD",
+      "vision_semantic": "SENSOR_HOLD",
+      "geometry_unsafe_acceptance": false,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    },
+    {
+      "scenario": "water_diversion",
+      "geometry_only": "READY_TO_LAND",
+      "vision_semantic": "READY_TO_LAND",
+      "geometry_unsafe_acceptance": true,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    },
+    {
+      "scenario": "steep_landing",
+      "geometry_only": "NO_SAFE_SITE",
+      "vision_semantic": "NO_SAFE_SITE",
+      "geometry_unsafe_acceptance": false,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    },
+    {
+      "scenario": "rising_terrain",
+      "geometry_only": "READY_TO_LAND",
+      "vision_semantic": "READY_TO_LAND",
+      "geometry_unsafe_acceptance": false,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    },
+    {
+      "scenario": "occupied_landing",
+      "geometry_only": "NO_SAFE_SITE",
+      "vision_semantic": "NO_SAFE_SITE",
+      "geometry_unsafe_acceptance": false,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    },
+    {
+      "scenario": "unknown_landing",
+      "geometry_only": "READY_TO_LAND",
+      "vision_semantic": "NO_SAFE_SITE",
+      "geometry_unsafe_acceptance": true,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    },
+    {
+      "scenario": "small_landing",
+      "geometry_only": "NO_SAFE_SITE",
+      "vision_semantic": "NO_SAFE_SITE",
+      "geometry_unsafe_acceptance": false,
+      "vision_unsafe_acceptance": false,
+      "vision_geometric_violation_frames": 0
+    }
+  ],
+  "limitations": "相同图像生成器的分离种子，不是独立真实分布。原型比较不能证明真实飞行能力或学术创新。"
+}

@@ -1,0 +1,20 @@
+// 来源：本项目原创。BGR、留白、半像素采样、网格解码和跨类别去重的手算用例。
+const assert=require('node:assert/strict');
+const m=require('../drone_nav/detection_math.cjs');
+const image={width:2,height:1,data:Uint8Array.from([255,0,0,255,0,0,255,255])};
+const p=m.prepare(image,2);
+assert.deepEqual([...p.values],[0,255,114,114,0,0,114,114,255,0,114,114]);
+assert.equal(p.ratio,1);
+const average=m.prepare({width:2,height:2,data:Uint8Array.from([0,0,0,255,100,100,100,255,100,100,100,255,200,200,200,255])},1);
+assert.deepEqual([...average.values],[100,100,100]);
+const box={x1:0,y1:0,x2:10,y2:10,score:.9,group:'person'};
+assert.equal(m.iou(box,{...box,x1:5,x2:15}),1/3);
+assert.equal(m.nms([box,{...box,score:.8},{...box,group:'vehicle'}]).length,2);
+const scores=new Float32Array(8400*85);
+scores[0]=2;scores[1]=3;scores[4]=.9;scores[5]=.8;
+const found=m.decode(scores,[1,8400,85],{ratio:1,width:640,height:640},{x0:10,y0:20,width:640,height:640,index:0});
+assert.equal(found.length,1);assert.deepEqual([found[0].x1,found[0].y1,found[0].x2,found[0].y2],[22,40,30,48]);
+assert.equal(m.decode(scores,[1,8400,85],{ratio:1,width:10,height:640},{x0:0,y0:0,width:640,height:640,index:0}).length,0);
+scores[20]=NaN;assert.throws(()=>m.decode(scores,[1,8400,85],{},{}));
+assert.throws(()=>m.nms([box],NaN));
+console.log('detection math passed');

@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- 来源：本项目原创，系统字体与原生 Canvas，无外部资源。 -->
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>无人机配送 · 视觉降落检查</title>
+<style>
+:root{color-scheme:dark;--bg:#101722;--panel:#192333;--muted:#a9b9cc;--line:#34465a;--good:#83dbbb;--bad:#ffd18a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#e9f0f9;font:15px/1.65 system-ui,"Microsoft YaHei",sans-serif}main{max-width:1220px;margin:auto;padding:28px}h1{font-size:28px;margin:7px 0}h2{font-size:18px;margin:0 0 12px}p{margin:7px 0}.eyebrow{color:var(--good);letter-spacing:2px;font-size:12px}.muted{color:var(--muted)}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.card strong{display:block;font-size:28px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0}select,button{background:#24364c;color:inherit;border:1px solid #53677d;border-radius:7px;padding:9px;font:inherit}select{max-width:100%}.pill{display:inline-block;border:1px solid var(--line);padding:4px 12px;border-radius:20px}.good{color:var(--good)}.bad{color:var(--bad)}.images{display:grid;grid-template-columns:1fr 1fr;gap:12px}figure{margin:0}img{display:block;width:100%;image-rendering:pixelated;background:#0a1019;border-radius:7px}figcaption{font-size:13px;color:var(--muted)}canvas{display:block;width:100%;aspect-ratio:20/16;background:#0a1019;border-radius:8px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.stats div{border-top:1px solid var(--line);padding:8px 0}.stats span{display:block;color:var(--muted);font-size:12px}.wide{margin-top:16px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap;text-align:left}td,th{padding:9px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:500}.reason{padding:12px;border-left:3px solid var(--bad);background:#111c2c;margin:14px 0}.notice{border-left:3px solid var(--good);padding-left:14px}input[type=range]{width:100%}@media(max-width:760px){main{padding:16px}.grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr 1fr}h1{font-size:24px}}
+</style>
+<main>
+<div class="eyebrow">GRADUATION PROJECT / V0.8</div><h1>到达之后，判断能否降落</h1>
+<p class="muted">彩色图判断地面类别，深度图检查坡度与凸起。保留几何判断作为对照。</p>
+<p class="notice">本页仅演示合成场景与固定规则。通过表示允许进入下一步，尚未下降、触地或放餐。</p>
+<section class="cards" id="summary"></section>
+<div class="toolbar"><label for="scenario">开发场景</label><select id="scenario"></select><span class="pill" id="terminal"></span></div>
+<div class="grid"><section class="panel"><h2>01 · 导航观测与路径</h2><canvas id="map" width="600" height="480"></canvas><label for="step">观测批次 <span id="progress"></span></label><input type="range" id="step" min="0" value="0"><p id="navigation" class="muted"></p><p class="muted">深色＝未知；灰蓝＝已观测空闲；橙色＝占用；绿色＝走过路径。末端检查显示最终到达后的观测。</p></section>
+<section class="panel"><h2>02 · 降落点相机证据</h2><div id="images" class="images"></div><div class="reason" id="reason"></div><div class="stats" id="stats"></div></section></div>
+<section class="panel wide"><h2>03 · 逐场景对照</h2><p class="muted">只检查几何会漏掉平坦水面；只检查颜色会漏掉同色凸起。下表使用同一帧做两种判断，不是两次飞行。</p><div class="table-wrap"><table><thead><tr><th>场景</th><th>仅几何</th><th>类别检查</th><th>联合判断</th><th>导航距离</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section class="panel wide"><h2>实验边界</h2><p id="scope"></p><p class="muted">检查半径 2 m、坡度上限 5°、最大平面残差 15 cm。残差是观测点与拟合平面的高度差。候选区内缺失深度或未知类别即拒绝；有限像素仍可能漏掉细小障碍。本轮使用已知地面参考高度和精确位置，未加入视觉定位误差、风、移动行人或真实相机噪声。</p></section>
+</main>
+<script id="data" type="application/json">__DELIVERY_DATA__</script>
+<script>
+'use strict';
+const report=JSON.parse(document.getElementById('data').textContent),$=id=>document.getElementById(id);
+const names={READY_TO_LAND:'检查通过 · 尚未降落',LANDING_REJECTED:'拒绝降落',NAVIGATION_HOLD:'导航停止 · 未检查',LANDING_SENSOR_HOLD:'观测异常 · 未通过'};
+const add=(parent,tag,text,cls='')=>{const e=document.createElement(tag);e.textContent=text;e.className=cls;parent.append(e);return e;};
+for(const [label,value] of [['开发场景',report.summary.cases],['联合检查通过',report.summary.ready],['拒绝降落',report.summary.rejected],['未进入检查',report.summary.navigation_hold+report.summary.sensor_hold]]){const e=add($('summary'),'div','', 'card');add(e,'strong',value);add(e,'span',label,'muted');}
+report.results.forEach((r,i)=>{const o=add($('scenario'),'option',`${String(i+1).padStart(2,'0')} · ${r.title}`);o.value=i;const tr=add($('rows'),'tr','');for(const text of [r.title,r.landing?(r.landing.geometry_accepted?'通过':'拒绝'):'未检查',r.landing?(r.landing.semantic_accepted?'通过':'拒绝'):'未检查',names[r.terminal_state],`${r.navigation.distance_m.toFixed(1)} m`])add(tr,'td',text);});
+$('scope').textContent=report.scope;
+let selected=0;
+function draw(){const r=report.results[selected],n=r.navigation,t=n.trace[+$('step').value],c=$('map').getContext('2d'),sx=600/n.width,sy=480/n.height;c.clearRect(0,0,600,480);const layer=t.scan_layer||t.layer;
+for(let y=0;y<n.height;y++)for(let x=0;x<n.width;x++){const v=layer[y][x];c.fillStyle=v==='free'?'#344a5e':v==='occupied'?'#b6764b':'#152130';c.fillRect(x*sx+1,(n.height-1-y)*sy+1,sx-2,sy-2);}
+const xy=p=>[(p[0]+.5)*sx,(n.height-p[1]-.5)*sy];c.strokeStyle='#83dbbb';c.lineWidth=4;c.beginPath();c.moveTo(...xy(n.start));for(const s of n.trace.slice(0,+$('step').value+1)){c.lineTo(...xy(s.position));}c.stroke();for(const [p,color] of [[n.goal,'#ffd18a'],[t.position,'#b7ffe3']]){c.fillStyle=color;c.beginPath();c.arc(...xy(p),8,0,Math.PI*2);c.fill();}
+$('progress').textContent=`${+$('step').value+1} / ${n.trace.length}`;$('navigation').textContent=t.reason;}
+function select(){selected=+$('scenario').value;const r=report.results[selected],e=r.landing;$('terminal').textContent=names[r.terminal_state];$('terminal').className='pill '+(e?.accepted?'good':'bad');$('step').max=r.navigation.trace.length-1;$('step').value=$('step').max;$('reason').textContent=r.reason;$('images').replaceChildren();$('stats').replaceChildren();
+if(r.landing_images)for(const [key,title] of [['rgb','彩色图'],['mask','预测类别 · 紫色为未知'],['depth','深度图 · 黑色为缺失'],['roi','检查区域 · 周围调暗']]){const f=add($('images'),'figure','');const img=document.createElement('img');img.src=r.landing_images[key];img.alt=title;f.append(img);add(f,'figcaption',title);}
+else add($('images'),'p','未取得用于检查的图像','muted');
+if(e)for(const [label,value] of [['坡度',e.slope_deg===null?'无法估计':e.slope_deg.toFixed(2)+'°'],['最大平面残差',e.max_residual_m===null?'无法估计':(100*e.max_residual_m).toFixed(2)+' cm'],['有效点 / 缺失深度',`${e.sample_count} / ${e.missing_depth}`],['区域完整入镜',e.coverage_complete?'是':'否']]){const div=add($('stats'),'div',value);add(div,'span',label);}draw();}
+$('scenario').addEventListener('change',select);$('step').addEventListener('input',draw);select();
+</script></html>

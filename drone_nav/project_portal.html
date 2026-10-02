@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>无人机导航毕设 · 演示首页</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eff3f2;color:#213831;font-family:system-ui,"Microsoft YaHei",sans-serif}main{max-width:1160px;margin:auto;padding:40px 24px}header{padding:24px 0 30px;border-bottom:1px solid #c9d8d1}.eyebrow{font-size:13px;letter-spacing:2px;color:#386953}h1{font-size:36px;margin:14px 0}p{line-height:1.8}header p{max-width:800px;color:#50685e}.notice{padding:16px 20px;background:#e2ebe7;border-radius:8px;line-height:1.8;margin:24px 0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}article{background:#fff;padding:24px;border:1px solid #d4dfda;border-radius:12px;display:flex;flex-direction:column}.number{font-size:13px;color:#647d71}h2{font-size:21px;margin:12px 0 0}article p{font-size:15px;flex:1;min-height:80px;color:#566b61}a{color:#19624a;text-underline-offset:4px}article a{font-weight:650}small{font-size:11px;display:block;margin-top:18px;color:#73877c;overflow-wrap:anywhere}.missing{color:#8c512d;font-size:14px}footer{margin-top:28px;padding-top:20px;border-top:1px solid #c9d8d1;font-size:14px;line-height:2}footer a{display:inline-block;margin-right:22px}code{background:#e0e7e3;padding:2px 5px;border-radius:3px}@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){main{padding:20px 16px}h1{font-size:28px}.grid{grid-template-columns:1fr}article p{min-height:0}}
+</style>
+<main><header><div class="eyebrow">毕业设计 / 本地电脑仿真</div><h1>视觉感知与无人机导航</h1><p>校园食堂配送站 → 宿舍区固定取餐点。这里集中展示导航、降落、真实航拍识别及异常处理的已有实验。</p></header>
+<div class="notice"><strong>推荐顺序：</strong>先看统一任务流程，再看障碍观测与真实航拍识别。页面播放已保存的记录；真实图像识别尚未接入飞行控制，外卖交付尚未实现。</div>
+<div class="grid">__CARDS__</div>
+<footer><a href="/docs/RESULTS_CATALOG.md">当前成果清单</a><a href="/docs/RESULTS_BRIEF.md">成果简报</a><a href="/docs/RESULTS_OVERVIEW.md">完整成果总览</a><a href="/docs/DEMO_GUIDE.md">启动与演示说明</a><p>查看结果：<code>.\demo.ps1 -Open</code>　重新实验：<code>.\demo.ps1 -RunMission -Open</code><br>“重新实验”只重算统一任务九场景，其他卡片展示已有归档。<br>关闭终端会停止本地服务；原始实验文件继续保留。仅本机访问。</p></footer></main>
+</html>

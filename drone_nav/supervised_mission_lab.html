@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>无人机导航 · 统一任务回放</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf3f5;color:#1c3441;font-family:system-ui,"Microsoft YaHei",sans-serif}main{max-width:1160px;margin:auto;padding:28px 22px}header{border-bottom:1px solid #cadce4;padding-bottom:20px}.tag{color:#147567;font-size:13px;font-weight:700;letter-spacing:2px}h1{font-size:28px;margin:10px 0}h2{font-size:18px;margin:0 0 14px}p{line-height:1.75}small,.muted{color:#536e7d}.controls{margin:20px 0}select{padding:10px;background:white;border:1px solid #b7ccd6;border-radius:6px;font:inherit;max-width:100%}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card,section{padding:18px;background:white;border:1px solid #d3e1e7;border-radius:10px}.card strong{display:block;font-size:21px;margin-top:8px}.notice{padding:14px 18px;border-left:4px solid #16755f;background:#e3f1e9;line-height:1.75;margin:18px 0}.notice.bad{background:#fff0e9;border-color:#bd5234}section{margin-top:16px}.flow{display:flex;flex-wrap:wrap;gap:8px}.phase{background:#edf5f4;border:1px solid #cee3df;border-radius:7px;padding:10px 12px;font-size:14px}.phase small{display:block;margin-top:5px}.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}.table{overflow:auto}table{width:100%;font-size:14px;border-collapse:collapse}th,td{text-align:left;border-bottom:1px solid #dce7eb;padding:9px 6px}svg{display:block;width:100%;height:auto}summary{cursor:pointer;color:#26677f}pre{white-space:pre-wrap;word-break:break-word;font-size:12px;max-height:340px;overflow:auto}@media(max-width:780px){.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}main{padding:18px 12px}h1{font-size:24px}}
+</style>
+<main><header><div class="tag">DRONE NAV / 统一任务流程</div><h1>从导航到接地，失败也有明确终态</h1><p>合成相机观测驱动巡航与下降；空中中止后持续恢复；停桨后保持关闭。各阶段都保留实际状态和原失败原因。</p><small>电脑物理仿真的已保存回放。从空中开始，尚未起飞、放餐或返航；自然图像识别尚未接入。</small></header>
+<div class="controls"><label>任务场景 <select id="scene"></select></label></div>
+<div class="cards"><div class="card"><small>任务终态</small><strong id="state"></strong></div><div class="card"><small>接地确认</small><strong id="landed"></strong></div><div class="card"><small>电机关闭联锁</small><strong id="motors"></strong></div><div class="card"><small>外卖交付</small><strong>尚未实现</strong></div></div>
+<div class="notice" id="notice"></div>
+<section><h2>实际阶段流转</h2><div id="flow" class="flow"></div></section>
+<div class="grid"><section><h2>实际高度与物理时间</h2><svg id="plot" viewBox="0 0 620 280" aria-label="实际高度随时间变化"></svg><p class="muted">高度由物理引擎积分得出；虚线为首次停桨请求。记录结束不自动表示已经停稳。</p></section><section><h2>本次记录</h2><div class="table"><table><tbody id="metrics"></tbody></table></div><p id="recovery" class="muted"></p></section></div>
+<section><h2>阶段记录与原始原因</h2><div class="table"><table><thead><tr><th>时刻</th><th>阶段</th><th>原因</th><th>电机</th></tr></thead><tbody id="events"></tbody></table></div></section>
+<section><h2>统一后的边界</h2><p>接地通过只代表本次模拟接地确认。空中恢复确认只代表运动稳定，不清除障碍或恢复任务；停桨后接地证据不足时也不重新启动电机。</p><p>当前串联原合成视觉导航、下降与持续恢复。近场采样研究、真实航拍识别、起飞和交付仍未全部整合；原接地探针使用精确仿真几何。</p><details><summary>查看子模块状态及配置</summary><pre id="detail"></pre></details></section>
+</main>
+<script>
+const DATA=__DATA__,$=id=>document.getElementById(id),f=(x,n=3)=>Number(x).toFixed(n);
+const names={CRUISING:'巡航',LANDING_AUTHORIZED:'末端检查通过',DESCENDING:'下降复查与控制',LANDED_CONFIRMED:'接地已确认',ABORTING:'任务中止',RECOVERING:'持续恢复',ABORTED_MOTION_STABLE:'中止 · 运动稳定',ABORTED_RECOVERY_UNCONFIRMED:'中止 · 恢复未确认',DISARMED_UNCONFIRMED:'停桨 · 接地未确认',MANUAL_REVIEW:'需要检查'};
+DATA.cases.forEach((c,i)=>$('scene').add(new Option(c.title,i)));
+function row(parent,values){const tr=document.createElement('tr');values.forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});$(parent).appendChild(tr)}
+function draw(s){const states=s.history,T=states.at(-1).time_s,W=538,H=208,X=t=>58+t/T*W,Y=z=>236-z/4*H;let svg='<rect x="58" y="28" width="538" height="208" fill="#f4f8fa"/>';
+for(let i=0;i<=4;i++){svg+=`<line x1="58" y1="${Y(i)}" x2="596" y2="${Y(i)}" stroke="#d6e3e9"/><text x="40" y="${Y(i)+4}" font-size="12" fill="#506b7c">${i}</text><text x="${X(T*i/4)}" y="260" text-anchor="middle" font-size="12" fill="#506b7c">${f(T*i/4,1)}</text>`}
+const d=s.result.disarm_requested_at_s;if(d!==null)svg+=`<line x1="${X(d)}" x2="${X(d)}" y1="28" y2="236" stroke="#b24d38" stroke-dasharray="5 4"/>`;
+svg+=`<polyline fill="none" stroke="#117868" stroke-width="2.4" points="${states.map(v=>`${X(v.time_s)},${Y(v.position[2])}`).join(' ')}"/>`;$('plot').innerHTML=svg}
+function render(){const c=DATA.cases[+$('scene').value],s=c.summary,r=s.result;$('state').textContent=names[r.state]||r.state;$('landed').textContent=r.touchdown_confirmed?'已确认':'未确认';$('motors').textContent=r.motors_off?'已锁定关闭':'未锁定关闭';
+const failed=!r.touchdown_confirmed;$('notice').className='notice'+(failed?' bad':'');$('notice').textContent=r.touchdown_confirmed?'本例正常完成模拟导航、下降和停桨后接地确认；外卖尚未交付。':r.state==='DISARMED_UNCONFIRMED'?'已停桨，接地证据不足。保持电机关闭，不调用带推力的恢复。':r.state==='ABORTED_MOTION_STABLE'?'任务已中止，运动稳定已确认。保持原失败原因，不自动继续任务。':'任务未完成，恢复也未确认。仿真记录结束不能当作安全状态证明。';
+$('flow').textContent='';$('events').textContent='';r.events.forEach(e=>{const div=document.createElement('div');div.className='phase';div.textContent=names[e.state]||e.state;const small=document.createElement('small');small.textContent=e.time_s===null?'时刻未知':f(e.time_s)+' 秒';div.appendChild(small);$('flow').appendChild(div);row('events',[e.time_s===null?'未知':f(e.time_s)+' 秒',names[e.state]||e.state,e.reason,e.motors_off?'锁定关闭':'未锁定关闭'])});
+$('metrics').textContent='';row('metrics',['相机帧',s.frames]);row('metrics',['物理步',s.steps.toLocaleString()]);row('metrics',['实际耗时',f(s.actual_final.time_s)+' 秒']);row('metrics',['最终高度',f(s.actual_final.position[2])+' 米']);row('metrics',['已确认格',r.confirmed_cell.join(', ')]);row('metrics',['空间侵犯采样区间',s.audit.clearance_violations]);
+$('recovery').textContent=r.recovery?`恢复结果：${r.recovery.state}；连续达标 ${f(r.recovery.stable_duration_s)} 秒。运动稳定不认证空间安全。`:'本例未调用空中恢复。';
+$('detail').textContent=JSON.stringify({original_reason:r.original_reason,navigation:r.navigation&&r.navigation.terminal_state,descent:r.descent&&{status:r.descent.status,reason:r.descent.reason,disarmed_at_s:r.descent.disarmed_at_s},recovery:r.recovery&&r.recovery.state,descent_config:r.descent_config,recovery_budget:r.recovery_budget},null,2);draw(s)}
+$('scene').addEventListener('change',render);render();
+</script></html>

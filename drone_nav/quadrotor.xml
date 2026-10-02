@@ -1,0 +1,23 @@
+<!-- 来源：本项目原创假设四旋翼，非实机标定；MJCF 格式由 MuJoCo 定义。 -->
+<mujoco model="delivery_quadrotor_development">
+  <compiler angle="radian"/>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="RK4"/>
+  <worldbody>
+    <geom name="ground" type="plane" size="20 20 .1" rgba=".3 .4 .3 1" friction=".8 .02 .01"/>
+    <body name="drone" pos="0 0 1">
+      <freejoint/>
+      <inertial pos="0 0 0" mass="1.4" diaginertia=".025 .025 .045"/>
+      <geom name="fuselage" type="box" size=".16 .12 .06" rgba=".2 .7 .65 1"/>
+      <site name="front_left" pos=".18 .18 0"/>
+      <site name="front_right" pos=".18 -.18 0"/>
+      <site name="rear_left" pos="-.18 .18 0"/>
+      <site name="rear_right" pos="-.18 -.18 0"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <motor name="rotor_fl" site="front_left" gear="0 0 1 0 0 .015" ctrllimited="true" ctrlrange="0 8"/>
+    <motor name="rotor_fr" site="front_right" gear="0 0 1 0 0 -.015" ctrllimited="true" ctrlrange="0 8"/>
+    <motor name="rotor_rl" site="rear_left" gear="0 0 1 0 0 -.015" ctrllimited="true" ctrlrange="0 8"/>
+    <motor name="rotor_rr" site="rear_right" gear="0 0 1 0 0 .015" ctrllimited="true" ctrlrange="0 8"/>
+  </actuator>
+</mujoco>

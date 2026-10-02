@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>异常后的持续停止确认</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf3f5;color:#203541;font-family:system-ui,"Microsoft YaHei",sans-serif}main{max-width:1120px;margin:auto;padding:30px 22px}header{border-bottom:1px solid #cddde4;padding-bottom:20px}h1{font-size:28px;margin:8px 0}h2{font-size:18px;margin:0 0 12px}p{line-height:1.75}small,.muted{color:#58707f}.tag{color:#117b6a;font-weight:700;font-size:13px;letter-spacing:2px}.controls{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0}label{display:flex;gap:8px;align-items:center}select{padding:10px;background:white;border:1px solid #b5c9d4;border-radius:6px;font:inherit;max-width:100%}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card,section{padding:18px;background:white;border:1px solid #d4e1e7;border-radius:10px}.card strong{display:block;font-size:21px;margin-top:8px;overflow-wrap:anywhere}.notice{background:#e3f1e9;border-left:4px solid #14785e;padding:14px 18px;margin:18px 0;line-height:1.75}.notice.bad{background:#fff0ec;border-color:#bb4932}section{margin:16px 0}svg{width:100%;height:auto;display:block}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 6px;border-bottom:1px solid #dce6eb;text-align:left}.table{overflow:auto}pre{white-space:pre-wrap;word-break:break-word;font-size:12px;max-height:350px;overflow:auto}summary{cursor:pointer;color:#25647d}@media(max-width:750px){.cards{grid-template-columns:1fr 1fr}main{padding:18px 12px}h1{font-size:24px}}
+</style>
+<main><header><div class="tag">DRONE NAV / 异常恢复记录</div><h1>中止之后，还要确认是否稳定</h1><p>持续读取速度、位置、倾斜和旋转速度，四项连续达标 0.3 秒才确认运动稳定。原任务保持中止，不自动继续飞行。</p><small>这是 MuJoCo 保存记录的回放。运动稳定不等于没有接触障碍，也不代表配送成功。</small></header>
+<div class="controls"><label>场景 <select id="case"></select></label><label>曲线指标 <select id="metric"><option value="speed_mps">线速度（米/秒）</option><option value="position_error_m">位置误差（米）</option><option value="angular_speed_rad_s">角速度（弧度/秒）</option><option value="tilt_deg">倾斜（度）</option></select></label></div>
+<div class="cards"><div class="card"><small>恢复判定</small><strong id="state"></strong></div><div class="card"><small>已验证恢复时间</small><strong id="duration"></strong></div><div class="card"><small>连续达标时间</small><strong id="stable"></strong></div><div class="card"><small>是否自动恢复任务</small><strong>否</strong></div></div>
+<div id="notice" class="notice"></div>
+<section><h2>恢复过程</h2><svg id="plot" viewBox="0 0 1000 280" aria-label="恢复指标随物理时间变化"></svg><p class="muted">横轴为恢复开始后的秒数，虚线为该指标阈值。图上约每 0.02 秒显示一点；实际判定使用全部 0.002 秒样本。单条曲线达标不能替代四项连续同时达标。</p></section>
+<section><h2>最后一帧已验证状态</h2><div class="table"><table><thead><tr><th>指标</th><th>测得值</th><th>阈值</th></tr></thead><tbody id="measurements"></tbody></table></div><p id="evidence"></p></section>
+<section><h2>原失败与恢复结果分别保留</h2><p id="original"></p><p>恢复目标固定，不逐帧追随当前位置。短暂达标后再次超限会重新计时。持续故障、反馈时钟异常、位移超出范围或恢复超时，都不能记为已经稳定。</p><p>恢复是原任务中止后的额外控制，不改变原路线停止预算，也不延长图像有效期。这里没有新视觉输入或新的路线授权。</p><details><summary>查看本例完整摘要</summary><pre id="detail"></pre></details></section>
+</main>
+<script>
+const DATA=__DATA__, $=id=>document.getElementById(id), f=(v,n=3)=>Number(v).toFixed(n);
+const labels={MOTION_STABLE:'运动稳定已确认',RECOVERY_TIMEOUT:'恢复超时',RECOVERY_ENVELOPE_BREACH:'位移超出恢复范围',RECOVERY_CLOCK_FAULT:'反馈时钟异常',RECOVERY_STATE_UNAVAILABLE:'状态无法验证'};
+const metrics={speed_mps:['线速度','speed_mps','米/秒'],position_error_m:['位置误差','position_error_m','米'],angular_speed_rad_s:['角速度','angular_speed_rad_s','弧度/秒'],tilt_deg:['倾斜','tilt_deg','度']};
+DATA.cases.forEach((c,i)=>$('case').add(new Option(c.title,i)));
+function current(){return DATA.cases[+$('case').value]}
+function plot(){const c=current(),r=c.summary.recovery,key=$('metric').value,threshold=r.budget[metrics[key][1]],points=c.points;const t0=points[0].time_s,T=Math.max(.002,points.at(-1).time_s-t0),M=Math.max(threshold*1.5,...points.map(p=>p[key]*1.1)),X=t=>62+t/T*910,Y=v=>230-v/M*196;let svg='<rect x="62" y="30" width="910" height="200" fill="#f4f8fa"/>';
+for(let i=0;i<=4;i++){let v=M*i/4,t=T*i/4;svg+=`<line x1="62" y1="${Y(v)}" x2="972" y2="${Y(v)}" stroke="#d6e2e9"/><text x="54" y="${Y(v)+4}" text-anchor="end" font-size="12" fill="#536d7c">${f(v,3)}</text><text x="${X(t)}" y="258" text-anchor="middle" font-size="12" fill="#536d7c">${f(t)}</text>`}
+svg+=`<line x1="62" y1="${Y(threshold)}" x2="972" y2="${Y(threshold)}" stroke="#b74c39" stroke-dasharray="6 4"/><polyline points="${points.map(p=>`${X(p.time_s-t0)},${Y(p[key])}`).join(' ')}" fill="none" stroke="#147768" stroke-width="2.5"/>`;
+if(points.length===1)svg+=`<circle cx="${X(0)}" cy="${Y(points[0][key])}" r="4" fill="#147768"/>`;$('plot').innerHTML=svg}
+function show(){const c=current(),s=c.summary,r=s.recovery,last=c.points.at(-1);$('state').textContent=labels[r.state]||r.state;$('duration').textContent=f(r.elapsed_verified_s)+' 秒';$('stable').textContent=f(r.stable_duration_s)+' 秒';
+const unsafe=s.final_audit.clearance_violations>0;$('notice').className='notice'+(unsafe||!r.motion_stable?' bad':'');$('notice').textContent=unsafe?'保留原失败：本例已发生空间侵犯。即使运动状态稳定，也不能认定为安全悬停，不能恢复任务。':r.motion_stable?'四项指标已连续达到本次开发阈值。原任务仍中止，后续行动需要新的观测与决策。':'本例没有确认运动稳定。记录结束只表示达到恢复边界或出现异常，不表示无人机已经停稳。';
+$('measurements').textContent='';for(const [key,[label,b,unit]] of Object.entries(metrics)){let tr=document.createElement('tr');for(const text of [label,`${f(last[key],4)} ${unit}`,`≤ ${r.budget[b]} ${unit}`]){let td=document.createElement('td');td.textContent=text;tr.appendChild(td)}$('measurements').appendChild(tr)}
+$('evidence').textContent=`新增控制 ${s.recovery_steps} 个物理步；最后已验证时刻 ${f(last.time_s)} 秒。${r.current_state_verified?'当前反馈已验证。':'最新反馈无效，表中显示最后有效状态。'} 恢复预算 ${r.budget.max_duration_s} 秒。`;
+$('original').textContent=`原任务原因：${s.original_state}；确认格 (${s.confirmed_cell.join(',')})。原空间侵犯 ${s.parent_audit.clearance_violations} 个采样区间，恢复期间新增 ${s.additional_clearance_intervals} 个。区间数不是独立碰撞次数。`;
+$('detail').textContent=JSON.stringify(s,null,2);plot()}
+$('case').addEventListener('change',show);$('metric').addEventListener('change',plot);show();
+</script></html>
