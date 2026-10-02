@@ -34,3 +34,7 @@
 ## 公开范围与来源
 
 仅发布整理后的成果说明和项目源码副本，不包含私人历史、凭据、模型权重、数据库、第三方游戏或运行时。现有第三方许可记录保留；未声明整体许可证的原创代码不新增许可证，请勿据此视为获得商业再分发授权。
+
+## 已运行的公开实验回放
+
+[打开合成图像实验回放](https://lx1454641058-source.github.io/drone-navigation-lab/replay/demo.html)。本次运行 `python -m drone_nav --mode vision --output docs/replay`，生成十个限定场景的决策结果与回放；包含 READY_TO_LAND、NO_PATH、SENSOR_HOLD、NO_SAFE_SITE。程序生成图像不代表真实相机或真实无人机验证。
